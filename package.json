@@ -1,0 +1,59 @@
+{
+  "name": "ad-injector",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "lint": "eslint --ext .ts --ignore-path .gitignore ./src",
+    "lint:fix": "eslint --ext .ts --ignore-path .gitignore --fix ./src",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "rollup -c",
+    "build": "npm run build:types && npm run build:js"
+  },
+  "main": "cjs/ad-injector.js",
+  "module": "esm/ad-injector.js",
+  "browser": "umd/ad-injector.js",
+  "types": "index.d.ts",
+  "author": {
+    "name": "S. Ishibashi",
+    "email": "ishibashi@usa-mimi.jp"
+  },
+  "contributors": [
+    {
+      "name": "S. Aihara",
+      "email": "aihara@argmax.jp"
+    }
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "7.6.0",
+    "@babel/plugin-proposal-class-properties": "7.5.5",
+    "@babel/plugin-proposal-object-rest-spread": "7.5.5",
+    "@babel/plugin-transform-member-expression-literals": "^7.2.0",
+    "@babel/plugin-transform-object-assign": "^7.2.0",
+    "@babel/plugin-transform-property-literals": "^7.2.0",
+    "@babel/plugin-transform-property-mutators": "^7.2.0",
+    "@babel/plugin-transform-reserved-words": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.6.0",
+    "@babel/preset-env": "7.6.0",
+    "@babel/preset-typescript": "7.6.0",
+    "@types/lodash.template": "^4.4.6",
+    "@typescript-eslint/eslint-plugin": "^2.2.0",
+    "@typescript-eslint/parser": "^2.2.0",
+    "eslint": "^6.4.0",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "prettier": "^1.18.2",
+    "rollup": "1.20.3",
+    "rollup-plugin-babel": "4.3.3",
+    "rollup-plugin-commonjs": "10.1.0",
+    "rollup-plugin-node-resolve": "5.2.0",
+    "typescript": "3.6.2"
+  },
+  "dependencies": {
+    "intersection-observer": "^0.7.0",
+    "lodash.template": "^3.6.2",
+    "polyfill-queryselector": "^1.0.2"
+  }
+}

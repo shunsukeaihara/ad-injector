@@ -1,0 +1,21 @@
+{
+  "presets": [
+    "@babel/typescript",
+    [
+      "@babel/preset-env",
+      {
+        "loose": true,
+        "modules": false
+      }
+    ]
+  ],
+  "plugins": [
+    "@babel/proposal-class-properties",
+    "@babel/proposal-object-rest-spread",
+    "@babel/transform-member-expression-literals",
+    "@babel/transform-property-literals",
+    "@babel/plugin-transform-property-mutators",
+    "@babel/plugin-transform-reserved-words",
+    "@babel/plugin-transform-object-assign"
+  ]
+}
