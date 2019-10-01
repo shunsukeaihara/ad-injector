@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "intersection-observer": "^0.7.0",
-    "lodash.template": "^3.6.2",
+    "lodash.template": "^4.5.0",
     "polyfill-queryselector": "^1.0.2"
   }
 }
