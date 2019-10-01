@@ -3,7 +3,7 @@ export interface FetchAdsFunc {
     (target: HTMLElement, placeholder: string): Promise<object[]>;
 }
 export interface OnImpressionFunc {
-    (trackId: string, target: HTMLElement): Promise<undefined>;
+    (trackId: string, target: HTMLElement): Promise<void>;
 }
 export interface OnFetchErrorFunc {
     (err: Error, target: HTMLElement): void;
@@ -22,7 +22,7 @@ export interface AdFrameConfig {
 declare function defaultExtractTrackId(data: object): string;
 declare function defaultExtractUrl(data: object): string;
 declare function defaultBuildLinkUrl(_data: object): string;
-declare function defaultOnImpression(_trackId: string, _target: HTMLElement): Promise<undefined>;
+declare function defaultOnImpression(_trackId: string, _target: HTMLElement): Promise<void>;
 declare function defaultFetchAds(_target: HTMLElement, _placeholder: string): Promise<object[]>;
 declare function defaultOnFetchError(err: Error, target: HTMLElement): void;
 declare function loadAdFrame(config: AdFrameConfig): void;

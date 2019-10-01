@@ -10,7 +10,7 @@ export interface FetchAdsFunc {
 
 
 export interface OnImpressionFunc {
-  (trackId: string, target: HTMLElement): Promise<undefined>;
+  (trackId: string, target: HTMLElement): Promise<void>;
 }
 
 export interface OnFetchErrorFunc {
@@ -41,7 +41,7 @@ function defaultBuildLinkUrl(_data: object): string {
   return ''
 }
 
-function defaultOnImpression(_trackId: string, _target: HTMLElement): Promise<undefined> {
+function defaultOnImpression(_trackId: string, _target: HTMLElement): Promise<void> {
   return new Promise((resolve: () => void) => {
     resolve();
   });
