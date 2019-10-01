@@ -1,10 +1,12 @@
 import 'intersection-observer';
-import 'polyfill-queryselector';
 export interface FetchAdsFunc {
-    (target: HTMLElement, placeholder: string, onsuccess: (target: HTMLElement, ads: object[]) => void, onerror: (target: HTMLElement) => void): void;
+    (target: HTMLElement, placeholder: string): Promise<object[]>;
 }
 export interface OnImpressionFunc {
-    (trackId: string, target: HTMLElement, onerror: (target: HTMLElement) => void): void;
+    (trackId: string, target: HTMLElement): Promise<undefined>;
+}
+export interface OnFetchErrorFunc {
+    (err: Error, target: HTMLElement): void;
 }
 export interface AdFrameConfig {
     container: string;
@@ -15,12 +17,14 @@ export interface AdFrameConfig {
     buildLinkUrl?(data: object): string;
     fetchAds?: FetchAdsFunc;
     onImpression?: OnImpressionFunc;
+    onFetchError?: OnFetchErrorFunc;
 }
 declare function defaultExtractTrackId(data: object): string;
 declare function defaultExtractUrl(data: object): string;
 declare function defaultBuildLinkUrl(_data: object): string;
-declare function defaultOnImpression(_trackId: string, _target: HTMLElement, _onerror: (target: HTMLElement) => void): void;
-declare function defaultFetchAds(target: HTMLElement, _placeholder: string, onsuccess: (target: HTMLElement, ads: object[]) => void, _onerror: (target: HTMLElement) => void): void;
+declare function defaultOnImpression(_trackId: string, _target: HTMLElement): Promise<undefined>;
+declare function defaultFetchAds(_target: HTMLElement, _placeholder: string): Promise<object[]>;
+declare function defaultOnFetchError(err: Error, target: HTMLElement): void;
 declare function loadAdFrame(config: AdFrameConfig): void;
 declare namespace loadAdFrame {
     var defaults: {
@@ -29,6 +33,7 @@ declare namespace loadAdFrame {
         defaultBuildLinkUrl: typeof defaultBuildLinkUrl;
         defaultOnImpression: typeof defaultOnImpression;
         defaultFetchAds: typeof defaultFetchAds;
+        defaultOnFetchError: typeof defaultOnFetchError;
     };
 }
 declare const _default: {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
-    <header>
-        <script id="template" type="x-template">
+<header>
+    <script id="template" type="x-template">
             <a class="ad" href="<%= redirectUrl %>">
                 <div>
                     <div><%= item.name %></div>
@@ -9,7 +9,7 @@
                 </div>
             </a>
         </script>
-        <script id="template2" type="x-template">
+    <script id="template2" type="x-template">
                 <a class="ad2" href="<%= redirectUrl %>">
                     <div>
                         <div><%= item.name %></div>
@@ -17,43 +17,45 @@
                     </div>
                 </a>
             </script>
-        <script async type="text/javascript" src="../umd/ad-injector.js"></script>
-    </header>
-    <body>
-        basic sample
-        <div id="ad-frame1" style="margin-top: 900px;">
-            <span class="ad-injector-placeholder" data-template-id="#template">... ad container</span>
-            <span class="ad-injector-placeholder" data-template-id="#template">... ad container</span>
-        </div>
-        <div id="ad-frame2" style="margin-top: 900px;">
-            <span class="ad-injector-placeholder" data-template-id="#template2">... ad container</span>
-        </div>
-    </body>
-    <script type="text/javascript">
-        window._adFrames = window._adFrames || []
-        window.adInjector = {
-            loadAdFrame: function (x) { window._adFrames.push(x) }
+    <script async type="text/javascript" src="../umd/ad-injector.js"></script>
+</header>
+
+<body>
+    basic sample
+    <div id="ad-frame1" style="margin-top: 900px;">
+        <span class="ad-injector-placeholder" data-template-id="#template">... ad container</span>
+        <span class="ad-injector-placeholder" data-template-id="#template">... ad container</span>
+    </div>
+    <div id="ad-frame2" style="margin-top: 900px;">
+        <span class="ad-injector-placeholder" data-template-id="#template2">... ad container</span>
+    </div>
+</body>
+<script type="text/javascript">
+    window._adFrames = window._adFrames || []
+    window.adInjector = {
+        loadAdFrame: function (x) { window._adFrames.push(x) }
+    }
+</script>
+<script type="text/javascript">
+    let config = {
+        template: '#template',
+        extractTrackId(ad) { return ad.trackId },
+        extractUrl(ad) { return ad.item.url },
+        buildLinkUrl(ad) {
+            let url = encodeURI(ad.item.url)
+            return 'click_redirect/?redirect_to=' + url + '&track_info=' + ad.trackId
+        },
+        fetchAds(target, onsuccess, onerror) {
+            onsuccess(target, [{ item: { name: 'hoge', description: 'description', url: 'http://hoge.com/', image_url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAAAAAAZai4+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjCREKJTfkaGE5AAACaElEQVR42u3V3XKiMAAF4L7/G5xErYBaq9v6s6OtLlD/ocBDbQCB7Ey7FbgwF+fcSIA5fgYTHhIj83BvAFlkkUUWWWQZErLIIsuEkEUWWSaELLLIMiFkkUWWCSGLLLJMCFlkkWVCyCKLLBNCFllkmRCyyLoD6wXXgz2K+Okwfht05OAtvqm/Ycn3rM9O0bj9pzEa5cej6AZV05JvWeEYReMSIz9PqEYzyNUpeJOY/axqXPI1K5g/SZSNUyy0S4Cbfv6BCP5valPyNWuXT/F1NMCmurRCPz94xKqclB5+ZwcvsOOmJTewouPx6JaNHeyrS8+Y5wdzTMqTLsRRfXzkHw1LfmalORWNIfDx3BP2r3M6srDNT29hVTdPMYiTqH+dtIYl9Vjl0pbv2a/289M+utXNYRfrZJHaWpTUY20A2wsCz84ekcAhP32A0O52IV0hTu1KarH812W2u8Q2xkkiq0ap3z5VM7FqW1KHVcZLZ7xfzX9fv6geoxO3LWnEUrtNkAyrf+tQv3gQkJe2JY1YYdo4KbbFJabatchCF08tS+qwYutxW8y4mv91saQttfaqLOCcpb5jNimpNVtjWJ9ZtYPXJLkI7NLRDkJ7Zvt0ga3RCdqU1GOpLcfxgovnoJt2zNDzosTv6W9Z9QgX2VdOWpTUZCUbke+E3ewXRkNAqHfwSFt3c1jp8ld/e7d5SV1Wcp5ZUtqLMB/Fa0dKZ60Vqpfy7srrhU1LbmTdNWSRRZYJIYssskwIWWSRZULIIossE0IWWWSZELLIIsuEkEUWWSaELLLIMiFkkUWWCSGLLLJMCFlkkWVC/gI+i6YMw2buTAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wOS0xN1QxOTozNzo1NSswOTowMHZ6S0sAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDktMTdUMTk6Mzc6NTUrMDk6MDAHJ/P3AAAAAElFTkSuQmCC" }, trackId: 'aaaaa' },
+            { item: { name: 'moke', description: 'description', url: 'http://moke.com/', image_url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAAAAAAZai4+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjCREKJTfkaGE5AAACaElEQVR42u3V3XKiMAAF4L7/G5xErYBaq9v6s6OtLlD/ocBDbQCB7Ey7FbgwF+fcSIA5fgYTHhIj83BvAFlkkUUWWWQZErLIIsuEkEUWWSaELLLIMiFkkUWWCSGLLLJMCFlkkWVCyCKLLBNCFllkmRCyyLoD6wXXgz2K+Okwfht05OAtvqm/Ycn3rM9O0bj9pzEa5cej6AZV05JvWeEYReMSIz9PqEYzyNUpeJOY/axqXPI1K5g/SZSNUyy0S4Cbfv6BCP5valPyNWuXT/F1NMCmurRCPz94xKqclB5+ZwcvsOOmJTewouPx6JaNHeyrS8+Y5wdzTMqTLsRRfXzkHw1LfmalORWNIfDx3BP2r3M6srDNT29hVTdPMYiTqH+dtIYl9Vjl0pbv2a/289M+utXNYRfrZJHaWpTUY20A2wsCz84ekcAhP32A0O52IV0hTu1KarH812W2u8Q2xkkiq0ap3z5VM7FqW1KHVcZLZ7xfzX9fv6geoxO3LWnEUrtNkAyrf+tQv3gQkJe2JY1YYdo4KbbFJabatchCF08tS+qwYutxW8y4mv91saQttfaqLOCcpb5jNimpNVtjWJ9ZtYPXJLkI7NLRDkJ7Zvt0ga3RCdqU1GOpLcfxgovnoJt2zNDzosTv6W9Z9QgX2VdOWpTUZCUbke+E3ewXRkNAqHfwSFt3c1jp8ld/e7d5SV1Wcp5ZUtqLMB/Fa0dKZ60Vqpfy7srrhU1LbmTdNWSRRZYJIYssskwIWWSRZULIIossE0IWWWSZELLIIsuEkEUWWSaELLLIMiFkkUWWCSGLLLJMCFlkkWVC/gI+i6YMw2buTAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wOS0xN1QxOTozNzo1NSswOTowMHZ6S0sAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDktMTdUMTk6Mzc6NTUrMDk6MDAHJ/P3AAAAAElFTkSuQmCC" }, trackId: 'bbbbb' },
+            ])
+        },
+        onImpression(trackId, el, onerror) {
+            console.log(trackId)
         }
-    </script>
-    <script type="text/javascript">
-        let config = {
-            template: '#template',
-            extractTrackId(ad) {return ad.trackId},
-            extractUrl(ad) {return ad.item.url},
-            buildRedirectUrl(ad){
-                let url = encodeURI(ad.item.url)
-                return 'click_redirect/?redirect_to=' + url + '&track_info=' + ad.trackId
-            },
-            fetchAds(target, onsuccess, onerror){
-                onsuccess(target, [{item: {name: 'hoge', description: 'description', url: 'http://hoge.com/', image_url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAAAAAAZai4+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjCREKJTfkaGE5AAACaElEQVR42u3V3XKiMAAF4L7/G5xErYBaq9v6s6OtLlD/ocBDbQCB7Ey7FbgwF+fcSIA5fgYTHhIj83BvAFlkkUUWWWQZErLIIsuEkEUWWSaELLLIMiFkkUWWCSGLLLJMCFlkkWVCyCKLLBNCFllkmRCyyLoD6wXXgz2K+Okwfht05OAtvqm/Ycn3rM9O0bj9pzEa5cej6AZV05JvWeEYReMSIz9PqEYzyNUpeJOY/axqXPI1K5g/SZSNUyy0S4Cbfv6BCP5valPyNWuXT/F1NMCmurRCPz94xKqclB5+ZwcvsOOmJTewouPx6JaNHeyrS8+Y5wdzTMqTLsRRfXzkHw1LfmalORWNIfDx3BP2r3M6srDNT29hVTdPMYiTqH+dtIYl9Vjl0pbv2a/289M+utXNYRfrZJHaWpTUY20A2wsCz84ekcAhP32A0O52IV0hTu1KarH812W2u8Q2xkkiq0ap3z5VM7FqW1KHVcZLZ7xfzX9fv6geoxO3LWnEUrtNkAyrf+tQv3gQkJe2JY1YYdo4KbbFJabatchCF08tS+qwYutxW8y4mv91saQttfaqLOCcpb5jNimpNVtjWJ9ZtYPXJLkI7NLRDkJ7Zvt0ga3RCdqU1GOpLcfxgovnoJt2zNDzosTv6W9Z9QgX2VdOWpTUZCUbke+E3ewXRkNAqHfwSFt3c1jp8ld/e7d5SV1Wcp5ZUtqLMB/Fa0dKZ60Vqpfy7srrhU1LbmTdNWSRRZYJIYssskwIWWSRZULIIossE0IWWWSZELLIIsuEkEUWWSaELLLIMiFkkUWWCSGLLLJMCFlkkWVC/gI+i6YMw2buTAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wOS0xN1QxOTozNzo1NSswOTowMHZ6S0sAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDktMTdUMTk6Mzc6NTUrMDk6MDAHJ/P3AAAAAElFTkSuQmCC"}, trackId: 'aaaaa'},
-                                   {item: {name: 'moke', description: 'description', url: 'http://moke.com/', image_url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAACWCAAAAAAZai4+AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAHdElNRQfjCREKJTfkaGE5AAACaElEQVR42u3V3XKiMAAF4L7/G5xErYBaq9v6s6OtLlD/ocBDbQCB7Ey7FbgwF+fcSIA5fgYTHhIj83BvAFlkkUUWWWQZErLIIsuEkEUWWSaELLLIMiFkkUWWCSGLLLJMCFlkkWVCyCKLLBNCFllkmRCyyLoD6wXXgz2K+Okwfht05OAtvqm/Ycn3rM9O0bj9pzEa5cej6AZV05JvWeEYReMSIz9PqEYzyNUpeJOY/axqXPI1K5g/SZSNUyy0S4Cbfv6BCP5valPyNWuXT/F1NMCmurRCPz94xKqclB5+ZwcvsOOmJTewouPx6JaNHeyrS8+Y5wdzTMqTLsRRfXzkHw1LfmalORWNIfDx3BP2r3M6srDNT29hVTdPMYiTqH+dtIYl9Vjl0pbv2a/289M+utXNYRfrZJHaWpTUY20A2wsCz84ekcAhP32A0O52IV0hTu1KarH812W2u8Q2xkkiq0ap3z5VM7FqW1KHVcZLZ7xfzX9fv6geoxO3LWnEUrtNkAyrf+tQv3gQkJe2JY1YYdo4KbbFJabatchCF08tS+qwYutxW8y4mv91saQttfaqLOCcpb5jNimpNVtjWJ9ZtYPXJLkI7NLRDkJ7Zvt0ga3RCdqU1GOpLcfxgovnoJt2zNDzosTv6W9Z9QgX2VdOWpTUZCUbke+E3ewXRkNAqHfwSFt3c1jp8ld/e7d5SV1Wcp5ZUtqLMB/Fa0dKZ60Vqpfy7srrhU1LbmTdNWSRRZYJIYssskwIWWSRZULIIossE0IWWWSZELLIIsuEkEUWWSaELLLIMiFkkUWWCSGLLLJMCFlkkWVC/gI+i6YMw2buTAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wOS0xN1QxOTozNzo1NSswOTowMHZ6S0sAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDktMTdUMTk6Mzc6NTUrMDk6MDAHJ/P3AAAAAElFTkSuQmCC"}, trackId: 'bbbbb'},
-                          ])
-            },
-            onImpression(trackId, el, onerror){
-                console.log(trackId)
-            }
-        }
-        adInjector.loadAdFrame(Object.assign({container: '#ad-frame1'}, config))
-        adInjector.loadAdFrame(Object.assign({container: '#ad-frame2'}, config))
-    </script>
+    }
+    adInjector.loadAdFrame(Object.assign({ container: '#ad-frame1' }, config))
+    adInjector.loadAdFrame(Object.assign({ container: '#ad-frame2' }, config))
+</script>
+
 </html>

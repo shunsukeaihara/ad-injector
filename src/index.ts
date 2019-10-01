@@ -1,19 +1,20 @@
 import 'intersection-observer';
-import 'polyfill-queryselector';
 import templateCompiler from 'lodash.template';
 import { TemplateExecutor } from 'lodash';
 
 const PLACEHOLDER_CLASS: string = '.ad-injector-placeholder';
 
 export interface FetchAdsFunc {
-  (target: HTMLElement, placeholder: string,
-    onsuccess: (target: HTMLElement, ads: object[]) => void,
-    onerror: (target: HTMLElement) => void): void;
+  (target: HTMLElement, placeholder: string): Promise<object[]>;
 }
 
+
 export interface OnImpressionFunc {
-  (trackId: string, target: HTMLElement,
-    onerror: (target: HTMLElement) => void): void
+  (trackId: string, target: HTMLElement): Promise<undefined>;
+}
+
+export interface OnFetchErrorFunc {
+  (err: Error, target: HTMLElement): void;
 }
 
 export interface AdFrameConfig {
@@ -23,8 +24,9 @@ export interface AdFrameConfig {
   extractTrackId?(data: object): string;
   extractUrl?(data: object): string;
   buildLinkUrl?(data: object): string;
-  fetchAds?: FetchAdsFunc,
-  onImpression?: OnImpressionFunc
+  fetchAds?: FetchAdsFunc;
+  onImpression?: OnImpressionFunc;
+  onFetchError?: OnFetchErrorFunc;
 }
 
 function defaultExtractTrackId(data: object): string {
@@ -39,15 +41,20 @@ function defaultBuildLinkUrl(_data: object): string {
   return ''
 }
 
-function defaultOnImpression(_trackId: string,
-  _target: HTMLElement,
-  _onerror: (target: HTMLElement) => void): void {
+function defaultOnImpression(_trackId: string, _target: HTMLElement): Promise<undefined> {
+  return new Promise((resolve: () => void) => {
+    resolve();
+  });
 }
 
-function defaultFetchAds(target: HTMLElement, _placeholder: string,
-  onsuccess: (target: HTMLElement, ads: object[]) => void,
-  _onerror: (target: HTMLElement) => void): void {
-  onsuccess(target, [])
+function defaultFetchAds(_target: HTMLElement, _placeholder: string): Promise<object[]> {
+  return new Promise((resolve: (res: object[]) => void) => {
+    resolve([]);
+  });
+}
+
+function defaultOnFetchError(err: Error, target: HTMLElement): void {
+  console.log(err, target);
 }
 
 interface Window {
@@ -56,12 +63,6 @@ interface Window {
 declare let window: Window;
 
 window._adFrames = window._adFrames || [];
-
-function isIE6(): boolean {
-  let ua = navigator.userAgent.toLowerCase();
-  let ver = navigator.appVersion.toLowerCase();
-  return (ua.indexOf("msie") != -1 && ver.indexOf("msie 6.") != -1)
-}
 
 function render(
   ads: object,
@@ -83,7 +84,7 @@ function render(
 
 function loadAdFrame(config: AdFrameConfig): void {
   const { container } = config;
-  let { placeholder, extractTrackId, extractUrl, buildLinkUrl, fetchAds, onImpression } = config;
+  let { placeholder, extractTrackId, extractUrl, buildLinkUrl, fetchAds, onImpression, onFetchError } = config;
   if (!extractTrackId) {
     extractTrackId = loadAdFrame.defaults.defaultExtractTrackId
   }
@@ -99,66 +100,48 @@ function loadAdFrame(config: AdFrameConfig): void {
   if (!onImpression) {
     onImpression = loadAdFrame.defaults.defaultOnImpression
   }
+  if (!onFetchError) {
+    onFetchError = loadAdFrame.defaults.defaultOnFetchError
+  }
+
   if (!placeholder) {
     placeholder = PLACEHOLDER_CLASS;
   }
-
   const cElm: HTMLElement | null = document.querySelector(container);
   if (!cElm) throw new Error(`container ${container} not found.`);
   const containerElm = cElm as HTMLElement;
 
-  let io: IntersectionObserver | null = null;
-  if (!isIE6()) {
-    // ie7, ie8でもだめな可能性があるので、その時はObject.definePropertyのチェックをする
-    // 一応polyfillはie7対応と言い張っている
-    io = new IntersectionObserver(entreis => {
-      entreis.forEach(entry => {
-        if (entry.intersectionRatio === 0) return;
-        const target = entry.target as HTMLElement;
-        const trackId = target.getAttribute('data-track-id');
-        if (trackId && !target.getAttribute('data-post-impression')) {
-          target.setAttribute('data-post-impression', 'true');
-          onImpression!(trackId, target,
-            (target: Element): void => {
-              target.setAttribute('data-post-impression', '');
-            });
-        } else if (!trackId) {
-          console.error('Invalid track id.');
-        }
-      });
+  let io: IntersectionObserver = new IntersectionObserver(entreis => {
+    entreis.forEach(entry => {
+      if (entry.intersectionRatio === 0) return;
+      const target = entry.target as HTMLElement;
+      const trackId = target.getAttribute('data-track-id');
+      if (trackId && !target.getAttribute('data-post-impression')) {
+        target.setAttribute('data-post-impression', 'true');
+        onImpression!(trackId, target).catch(() => {
+          target.setAttribute('data-post-impression', '');
+        });
+      } else if (!trackId) {
+        console.error('Invalid track id.');
+      }
     });
-  }
-  fetchAds(containerElm, placeholder,
-    (target: HTMLElement, ads: object[]) => {
-      document.querySelectorAll('#' + target.id + ' ' + placeholder).forEach(el => {
-        if (el.getAttribute("data-rendered")) return;
-        let ad = ads.shift();
-        if (ad) {
-          const templateId = el.getAttribute('data-template-id') ? el.getAttribute('data-template-id')! : config.template
-          const currentTemplate = document.querySelector(templateId);
-          if (!currentTemplate) throw new Error(`template ${templateId} not found.`);
-          const compiled = templateCompiler(currentTemplate!.innerHTML);
-          render(ad, el as HTMLElement, compiled, extractTrackId!, extractUrl!, buildLinkUrl!)
-          if (io) {
-            io.observe(el);
-          } else {
-            const trackId = extractTrackId!(ad);
-            if (trackId && !el.getAttribute('data-post-impression')) {
-              onImpression!(trackId, el as HTMLElement, (target: HTMLElement): void => {
-                target.setAttribute('data-post-impression', '');
-              })
-            }
-          }
-        } else {
-          // prepare not found
-          console.log("not renderd");
-        }
-      })
-    },
-    (_err: any) => {
-      // prepare request error
-    }
-  );
+  });
+  fetchAds(containerElm, placeholder).then((ads: object[]): void => {
+    containerElm.querySelectorAll(placeholder!).forEach((el: Element) => {
+      if (el.getAttribute("data-rendered")) return;
+      let ad = ads.shift();
+      if (ad) {
+        const templateId = el.getAttribute('data-template-id') ? el.getAttribute('data-template-id')! : config.template
+        const currentTemplate = document.querySelector(templateId);
+        if (!currentTemplate) throw new Error(`template ${templateId} not found.`);
+        const compiled = templateCompiler(currentTemplate!.innerHTML);
+        render(ad, el as HTMLElement, compiled, extractTrackId!, extractUrl!, buildLinkUrl!)
+        io.observe(el);
+      }
+    });
+  }).catch((err: Error) => {
+    onFetchError!(err, containerElm);
+  });
 }
 
 loadAdFrame.defaults = {
@@ -167,6 +150,7 @@ loadAdFrame.defaults = {
   defaultBuildLinkUrl,
   defaultOnImpression,
   defaultFetchAds,
+  defaultOnFetchError
 }
 
 function init(): void {

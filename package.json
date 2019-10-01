@@ -1,6 +1,6 @@
 {
   "name": "ad-injector",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "scripts": {
     "lint": "eslint --ext .ts --ignore-path .gitignore ./src",
@@ -28,14 +28,6 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "7.6.0",
-    "@babel/plugin-proposal-class-properties": "7.5.5",
-    "@babel/plugin-proposal-object-rest-spread": "7.5.5",
-    "@babel/plugin-transform-member-expression-literals": "^7.2.0",
-    "@babel/plugin-transform-object-assign": "^7.2.0",
-    "@babel/plugin-transform-property-literals": "^7.2.0",
-    "@babel/plugin-transform-property-mutators": "^7.2.0",
-    "@babel/plugin-transform-reserved-words": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.6.0",
     "@babel/preset-env": "7.6.0",
     "@babel/preset-typescript": "7.6.0",
     "@types/lodash.template": "^4.4.6",
@@ -53,7 +45,6 @@
   },
   "dependencies": {
     "intersection-observer": "^0.7.0",
-    "lodash.template": "^4.5.0",
-    "polyfill-queryselector": "^1.0.2"
+    "lodash.template": "^4.5.0"
   }
 }
