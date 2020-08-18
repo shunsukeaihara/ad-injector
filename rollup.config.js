@@ -16,7 +16,7 @@ export default {
     // Allow bundling cjs modules. Rollup doesn't understand cjs
     commonjs(),
     // Compile TypeScript/JavaScript files
-    babel({ extensions, include: ['src/**/*'] }),
+    babel({ extensions, include: ['src/**/*'], babelHelpers: 'bundled' }),
   ],
 
   output: [

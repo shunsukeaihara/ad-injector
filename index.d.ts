@@ -25,8 +25,8 @@ declare function defaultBuildLinkUrl(_data: object): string;
 declare function defaultOnImpression(_trackId: string, _target: HTMLElement): Promise<void>;
 declare function defaultFetchAds(_target: HTMLElement, _placeholder: string): Promise<object[]>;
 declare function defaultOnFetchError(err: Error, target: HTMLElement): void;
-declare function loadAdFrame(config: AdFrameConfig): void;
-declare namespace loadAdFrame {
+export declare function loadAdFrame(config: AdFrameConfig): void;
+export declare namespace loadAdFrame {
     var defaults: {
         defaultExtractTrackId: typeof defaultExtractTrackId;
         defaultExtractUrl: typeof defaultExtractUrl;
@@ -36,7 +36,4 @@ declare namespace loadAdFrame {
         defaultOnFetchError: typeof defaultOnFetchError;
     };
 }
-declare const _default: {
-    loadAdFrame: typeof loadAdFrame;
-};
-export default _default;
+export {};

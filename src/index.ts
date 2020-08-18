@@ -1,13 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import 'intersection-observer';
-import templateCompiler from 'lodash.template';
-import { TemplateExecutor } from 'lodash';
+import _ from 'lodash';
 
-const PLACEHOLDER_CLASS: string = '.ad-injector-placeholder';
+const PLACEHOLDER_CLASS = '.ad-injector-placeholder';
 
 export interface FetchAdsFunc {
   (target: HTMLElement, placeholder: string): Promise<object[]>;
 }
-
 
 export interface OnImpressionFunc {
   (trackId: string, target: HTMLElement): Promise<void>;
@@ -34,20 +33,31 @@ function defaultExtractTrackId(data: object): string {
 }
 
 function defaultExtractUrl(data: object): string {
-  return data.toString()
+  return data.toString();
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function defaultBuildLinkUrl(_data: object): string {
-  return ''
+  return '';
 }
 
-function defaultOnImpression(_trackId: string, _target: HTMLElement): Promise<void> {
+function defaultOnImpression(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _trackId: string,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _target: HTMLElement
+): Promise<void> {
   return new Promise((resolve: () => void) => {
     resolve();
   });
 }
 
-function defaultFetchAds(_target: HTMLElement, _placeholder: string): Promise<object[]> {
+function defaultFetchAds(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _target: HTMLElement,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _placeholder: string
+): Promise<object[]> {
   return new Promise((resolve: (res: object[]) => void) => {
     resolve([]);
   });
@@ -67,10 +77,10 @@ window._adFrames = window._adFrames || [];
 function render(
   ads: object,
   target: HTMLElement | null,
-  templateFn: TemplateExecutor,
+  templateFn: _.TemplateExecutor,
   getTrackId: (data: object) => string,
   getUrl: (data: object) => string,
-  buildLinkUrl: (data: object) => string,
+  buildLinkUrl: (data: object) => string
 ): HTMLElement {
   const linkUrl = buildLinkUrl(ads);
   const el = target ? target : document.createElement('span');
@@ -78,47 +88,61 @@ function render(
   el.setAttribute('data-track-id', getTrackId(ads));
   el.setAttribute('data-orig-link', getUrl(ads));
   el.setAttribute('data-link-url', linkUrl);
-  el.setAttribute("data-rendered", "rendered");
+  el.setAttribute('data-rendered', 'rendered');
   return el;
 }
 
-function loadAdFrame(config: AdFrameConfig): void {
+export function loadAdFrame(config: AdFrameConfig): void {
   const { container } = config;
-  let { placeholder, extractTrackId, extractUrl, buildLinkUrl, fetchAds, onImpression, onFetchError } = config;
-  if (!extractTrackId) {
-    extractTrackId = loadAdFrame.defaults.defaultExtractTrackId
+  const {
+    placeholder,
+    extractTrackId,
+    extractUrl,
+    buildLinkUrl,
+    fetchAds,
+    onImpression,
+    onFetchError,
+  } = config;
+  let _extractTrackId = loadAdFrame.defaults.defaultExtractTrackId;
+  if (extractTrackId) {
+    _extractTrackId = extractTrackId;
   }
-  if (!extractUrl) {
-    extractUrl = loadAdFrame.defaults.defaultExtractUrl
+  let _extractUrl = loadAdFrame.defaults.defaultExtractUrl;
+  if (extractUrl) {
+    _extractUrl = extractUrl;
   }
-  if (!buildLinkUrl) {
-    buildLinkUrl = loadAdFrame.defaults.defaultBuildLinkUrl
+  let _buildLinkUrl = loadAdFrame.defaults.defaultBuildLinkUrl;
+  if (buildLinkUrl) {
+    _buildLinkUrl = buildLinkUrl;
   }
-  if (!fetchAds) {
-    fetchAds = loadAdFrame.defaults.defaultFetchAds
+  let _fetchAds = loadAdFrame.defaults.defaultFetchAds;
+  if (fetchAds) {
+    _fetchAds = fetchAds;
   }
-  if (!onImpression) {
-    onImpression = loadAdFrame.defaults.defaultOnImpression
+  let _onImpression = loadAdFrame.defaults.defaultOnImpression;
+  if (onImpression) {
+    _onImpression = onImpression;
   }
-  if (!onFetchError) {
-    onFetchError = loadAdFrame.defaults.defaultOnFetchError
+  let _onFetchError = loadAdFrame.defaults.defaultOnFetchError;
+  if (onFetchError) {
+    _onFetchError = onFetchError;
   }
-
-  if (!placeholder) {
-    placeholder = PLACEHOLDER_CLASS;
+  let _placeholder = PLACEHOLDER_CLASS;
+  if (placeholder) {
+    _placeholder = placeholder;
   }
   const cElm: HTMLElement | null = document.querySelector(container);
   if (!cElm) throw new Error(`container ${container} not found.`);
   const containerElm = cElm as HTMLElement;
 
-  let io: IntersectionObserver = new IntersectionObserver(entreis => {
-    entreis.forEach(entry => {
+  const io: IntersectionObserver = new IntersectionObserver((entreis) => {
+    entreis.forEach((entry) => {
       if (entry.intersectionRatio === 0) return;
       const target = entry.target as HTMLElement;
       const trackId = target.getAttribute('data-track-id');
       if (trackId && !target.getAttribute('data-post-impression')) {
         target.setAttribute('data-post-impression', 'true');
-        onImpression!(trackId, target).catch(() => {
+        _onImpression(trackId, target).catch(() => {
           target.setAttribute('data-post-impression', '');
         });
       } else if (!trackId) {
@@ -126,22 +150,35 @@ function loadAdFrame(config: AdFrameConfig): void {
       }
     });
   });
-  fetchAds(containerElm, placeholder).then((ads: object[]): void => {
-    containerElm.querySelectorAll(placeholder!).forEach((el: Element) => {
-      if (el.getAttribute("data-rendered")) return;
-      let ad = ads.shift();
-      if (ad) {
-        const templateId = el.getAttribute('data-template-id') ? el.getAttribute('data-template-id')! : config.template
-        const currentTemplate = document.querySelector(templateId);
-        if (!currentTemplate) throw new Error(`template ${templateId} not found.`);
-        const compiled = templateCompiler(currentTemplate!.innerHTML);
-        render(ad, el as HTMLElement, compiled, extractTrackId!, extractUrl!, buildLinkUrl!)
-        io.observe(el);
-      }
+  _fetchAds(containerElm, _placeholder)
+    .then((ads: object[]): void => {
+      containerElm.querySelectorAll(_placeholder).forEach((el: Element) => {
+        if (el.getAttribute('data-rendered')) return;
+        const ad = ads.shift();
+        if (ad) {
+          const templateId = el.getAttribute('data-template-id')
+            ? el.getAttribute('data-template-id')
+            : config.template;
+          if (!templateId) throw new Error(`templateId is null.`);
+          const currentTemplate = document.querySelector(templateId);
+          if (!currentTemplate)
+            throw new Error(`template ${templateId} not found.`);
+          const compiled = _.template(currentTemplate?.innerHTML);
+          render(
+            ad,
+            el as HTMLElement,
+            compiled,
+            _extractTrackId,
+            _extractUrl,
+            _buildLinkUrl
+          );
+          io.observe(el);
+        }
+      });
+    })
+    .catch((err: Error) => {
+      _onFetchError(err, containerElm);
     });
-  }).catch((err: Error) => {
-    onFetchError!(err, containerElm);
-  });
 }
 
 loadAdFrame.defaults = {
@@ -150,8 +187,8 @@ loadAdFrame.defaults = {
   defaultBuildLinkUrl,
   defaultOnImpression,
   defaultFetchAds,
-  defaultOnFetchError
-}
+  defaultOnFetchError,
+};
 
 function init(): void {
   window._adFrames.forEach(loadAdFrame);
@@ -159,7 +196,3 @@ function init(): void {
 }
 
 init();
-
-export default {
-  loadAdFrame,
-};
